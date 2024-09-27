@@ -5189,6 +5189,7 @@ mute-stdout@^2.0.0:
   resolved "file:"
   dependencies:
     my-webpack-project "file:"
+    rimraf "^6.0.1"
 
 nanoid@^3.3.7:
   version "3.3.7"

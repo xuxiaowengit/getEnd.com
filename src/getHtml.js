@@ -1,12 +1,28 @@
-const { scrapeCountryData }=require('./getData');
-const { saveArrayToJson }=require('./outJson');
+const { scrapeCountryData }=require('./getData.js');
+const { saveArrayToJson }=require('./outJson.js');
 
-
-
+const fileAppender=require('./filetxt');
 
 const axios=require('axios');
 const cheerio=require('cheerio');
 const { fontFamily }=require('excel4node/distribution/lib/types');
+
+
+
+// 获取年、月、日、小时、分钟、秒
+const now=new Date();
+const year=now.getFullYear();
+const month=now.getMonth()+1; // 月份是从0开始的，所以需要加1
+const day=now.getDate();
+
+const hour=now.getHours();
+const minute=now.getMinutes();
+const second=now.getSeconds();
+
+// 格式化输出
+const currentTime=`${year}-${month}-${day} ${hour}:${minute}:${second}`;
+
+
 var countrys=0;
 let installerCountrylinks=[];
 let salesCountrylinks=[];
@@ -42,6 +58,14 @@ const scrapeLinks=async () => {
 				const lastSegment=href.split('/').pop();  
 				links.push(lastSegment);
 				// console.log(`Link1: ${i+1}: ${href}`); // 输出当前链接
+				// 保存txt方法
+				fileAppender.appendToFile('data/所有安装商国家清单.txt',lastSegment,(err) => {
+					if(err) {
+						console.error('追加文本时出错:',err);
+					} else {
+						// console.log('保存安装商国家:',links.length);
+					}
+				});
 			}
 		});
 		
@@ -62,7 +86,7 @@ const scrapeLinks=async () => {
 		saveArrayToJson(installerCountrylinks,'installersCountrysData.json',directory);
 		
 		// 测试时切掉数组指定长度外的数据
-		installerCountrylinks.splice(0,installerCountrylinks.length- 3);
+		// installerCountrylinks.splice(0,installerCountrylinks.length- 1);
 		
 		console.log("installerCountrylinks-测试长度:",installerCountrylinks.length)
 		
@@ -70,16 +94,20 @@ const scrapeLinks=async () => {
 		scrapeCountryData(installerCountrylinks,"安装商",installerCountrylinks.length,url)
 			.then((resData) => {
 				// console.log('Scraping completed.数据:',resData);
-				// 保存取出的全部国家安装商站点信息
+				// 保存取出的全部国家安装商站点清单
 				saveArrayToJson(resData,"installerCountryAllLinks.json",directory);
 			})
 			.catch(err => {
 				console.error('Error occurred:',err);
 			}).finally(() => {
-				// 这里执行无论成功或失败都需要执行的代码  
+				// 这里执行无论成功或失败都需要执行的代码
 				// console.log('Cleanup or final operations.');
-				// 执行爬虫2
 				// scrapeLinks2();
+				
+				// 执行爬出第三层站点信息
+				// scrapeLinks3();
+				
+				
 			});
 		
 		
@@ -123,6 +151,14 @@ const scrapeLinks2=async (res) => {
 			if(href) {
 				const lastSegment=href.split('/').pop();
 				links.push(lastSegment);
+				// 使用 appendToFile 方法
+				fileAppender.appendToFile('data/所有经销商商国家清单.txt',lastSegment,(err) => {
+					if(err) {
+						console.error('追加文本时出错:',err);
+					} else {
+						// console.log('保存经销商国家:',links.length);
+					}
+				});
 				// const lastSegment=href.split('/').pop();
 				// links.push(lastSegment);
 				// console.log(`Link2: ${i+1}: ${href}`); // 输出当前链接
@@ -148,14 +184,14 @@ const scrapeLinks2=async (res) => {
 		console.log("全部潜在客户国家数量:",countrys)
 		
 		// 测试时切掉数组指定长度外的数据
-		salesCountrylinks.splice(0,salesCountrylinks.length- 3);
-		
+		// salesCountrylinks.splice(0,salesCountrylinks.length-1);
+		// 
 		
 		// // 调用抓取函数
 		scrapeCountryData(salesCountrylinks,"经销商",salesCountrylinks.length,url2)
 			.then((resData) => {
 				// console.log('Scraping completed.数据:',resData);
-				// 保存取出的全部国家经销商站点信息
+				// 保存取出的全部国家经销商站点清单
 				saveArrayToJson(resData,"salesCountryAllLinks.json",directory);
 			})
 			.catch(err => {
@@ -164,7 +200,7 @@ const scrapeLinks2=async (res) => {
 				// 这里执行无论成功或失败都需要执行的代码  
 				// console.log('Cleanup or final operations.');
 				// 执行爬虫2
-				scrapeLinks();
+				scrapeLinks(); //安装商方法
 			});
 
 	}
@@ -172,4 +208,4 @@ const scrapeLinks2=async (res) => {
 
 
 // 执行爬虫
-scrapeLinks2();
+scrapeLinks2(); //经销商方法
