@@ -1,0 +1,15 @@
+{
+	"proxies": [{
+		"name": "openvpn",
+		"type": "vless",
+		"server": "35.183.184.70",
+		"port": 443,
+		"uuid": "175dfd1c-6a55-4060-a80a-598414fdbe79",
+		"alterId": 0,
+		"cipher": "auto",
+		"tls": true,
+		"network": "ws",
+		"user": "root",
+		"password": "root"
+	}]
+}

@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "gulp": "gulp build",
-	"getlinks":"node src/getLinksData.js",
+    "getlinks": "node src/getLinksData.js",
     "start": "node src/getHtml.js",
     "build": "webpack --mode=production --node-env=production",
     "build:dev": "webpack --mode=development",
@@ -26,6 +26,7 @@
     "gulp-htmlmin": "^5.0.1",
     "gulp-imagemin": "^9.1.0",
     "gulp-sourcemaps": "^3.0.0",
+    "gulp-terser": "^2.1.0",
     "gulp-uglify": "^3.0.2",
     "html-webpack-plugin": "^5.6.0",
     "path-browserify": "^1.0.1",
